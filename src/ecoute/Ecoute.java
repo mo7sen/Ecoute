@@ -15,8 +15,8 @@ public class Ecoute extends Application
     final int   screenWidth = 1000,
                 screenHeight = 600,
                 buttonSize = 40;
-    int     colNumber = 20,
-            rowNumber = 10;
+    public int     colNumber = 16,
+            rowNumber = 4;
     
     public static Stage stage;
     @Override

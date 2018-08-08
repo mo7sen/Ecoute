@@ -10,6 +10,7 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import player.SoundsHolder;
 
 public class ControlBar
 {
@@ -22,12 +23,16 @@ public class ControlBar
                     volSlider = new Slider(0, 100, 50);
     static Label    bpmLabel = new Label(),
                     volLabel = new Label();
-    
+    public static SoundsHolder sounds;
+
     public static FlowPane build()
     {
         //Add core nodes to FlowPane
         FlowPane controlPane = new FlowPane(playBtn, pauseBtn, stopBtn, bpmSlider, bpmLabel, volSlider, volLabel);
-        
+
+        //SoundsHolder sounds;
+        sounds = new SoundsHolder();
+
         //Set up functionality of the Play button
         playBtn.setDisable(false);
         playBtn.setOnAction((event) -> 
@@ -35,6 +40,8 @@ public class ControlBar
             playBtn.setDisable(true);
             pauseBtn.setDisable(false);
             stopBtn.setDisable(false);
+
+            sounds.play();
             
             //InEdited: Play button pressed
         });
@@ -58,6 +65,7 @@ public class ControlBar
             playBtn.setDisable(false);
             pauseBtn.setDisable(true);
             stopBtn.setDisable(true);
+            sounds.stop();
             
             //InEdited: Stop button pressed
         });
@@ -70,6 +78,11 @@ public class ControlBar
         bpmSlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             //InEdited:
             //      on BPM value change
+
+
+
+            //sounds.setBpm((Integer) newValue);
+            //this doesnt work and im too lazy to set up a listener and shit idk how to
         });
         //EndOf: Set up functionality of the BPM slider
         
@@ -80,6 +93,10 @@ public class ControlBar
         volSlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             //InEdited:
             //      on Volume value change
+
+
+            //sounds.setVolume((Integer) newValue);
+            //same here
         });
         //EndOf: Set up functionality of the Volume slider
         

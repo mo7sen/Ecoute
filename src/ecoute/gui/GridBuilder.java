@@ -3,6 +3,8 @@ package ecoute.gui;
 import ecoute.Ecoute;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +23,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import player.Sound;
+import player.SoundsHolder;
+
+import static ecoute.gui.ControlBar.sounds;
 
 public class GridBuilder extends GridPane 
 {
@@ -71,8 +77,9 @@ public class GridBuilder extends GridPane
             try {
                 if(newSample.getName().endsWith(".wav")) //Checks the format of the file
                 {
-                    URL newSamplePath = new URL(newSample.getPath());
+                    URL newSamplePath = new URL("file:///"+newSample.getPath());
                     this.addRow();
+                    sounds.sounds.add(new Sound(newSamplePath));
                     /*
                     InEdited: Add Logic to add the new sample to the array of samples.
                     */
@@ -85,10 +92,10 @@ public class GridBuilder extends GridPane
                     headsUp.setResizable(false);
                     headsUp.show();
                 }
-            } catch (MalformedURLException ex) {
-                Logger.getLogger(Ecoute.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception e){
+                e.printStackTrace();
             }
-            
+
         });
         
         //Add all previous nodes into a final VBox for a convenient vertical layout
@@ -107,7 +114,7 @@ public class GridBuilder extends GridPane
         for(int r = 0; r < rowCount; r++)
             this.add(new MusicButton(defaultButtonSize, buttonDefault, buttonActive, columnCount, r), columnCount, r);
         this.columnCount++;
-        
+        sounds.addColumn();
         /*
         InEdited:
                 Here goes the code for editing the Array of Booleans to match
@@ -123,7 +130,6 @@ public class GridBuilder extends GridPane
         for(int c = 0; c < columnCount; c++)
             this.add(new MusicButton(defaultButtonSize, buttonDefault, buttonActive, c, rowCount), c, rowCount);
         this.rowCount++;
-        
         /*
         InEdited:
                 Here goes the code for editing the Array of Booleans to match

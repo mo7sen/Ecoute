@@ -5,6 +5,8 @@ package ecoute.gui;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import static ecoute.gui.ControlBar.sounds;
+
 public class MusicButton extends Rectangle
 {
     int sideLength;
@@ -45,14 +47,28 @@ public class MusicButton extends Rectangle
             {
                 this.setFill(activeColor);
                 this.setStroke(activeBorderColor);
+
+                //this line sets the boolean array in position of column index inside the array of sounds
+                sounds.sounds.get(rowIndex).lista.set(colIndex,true);
             }
             else
             {
                 this.setFill(defaultColor);
                 this.setStroke(defaultBorderColor);
+                //this line does the opposite
+                sounds.sounds.get(rowIndex).lista.set(colIndex,false);
             }
             active = !active;
         });
         //EndOf: Handling The Clicking Event
+    }
+
+
+    public int getColIndex() {
+        return colIndex;
+    }
+
+    public int getRowIndex() {
+        return rowIndex;
     }
 }

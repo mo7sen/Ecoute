@@ -1,5 +1,6 @@
 package player;
 
+import ecoute.gui.ControlBar;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -12,9 +13,9 @@ import java.util.TimerTask;
 
 public class SoundsHolder {
     public ArrayList<Sound> sounds = new ArrayList<>();
-    IntegerProperty bpm = new SimpleIntegerProperty();
-    IntegerProperty volume = new SimpleIntegerProperty();
-    int colNumber = 16;
+    public IntegerProperty bpm = new SimpleIntegerProperty();
+    public IntegerProperty volume = new SimpleIntegerProperty();
+    int colNumber = ecoute.Ecoute.colNumber;
     Timer timer;
     URL kick = null,
             snare = null,
@@ -22,7 +23,9 @@ public class SoundsHolder {
             closedHat = null;
 
     public SoundsHolder(){
-        setBpm(120);
+        bpm.bind(ControlBar.bpmSlider.valueProperty());
+        volume.bind(ControlBar.volSlider.valueProperty());
+        
         initSounds();
     }
 
@@ -39,45 +42,49 @@ public class SoundsHolder {
             e.printStackTrace();
         }
 
-
+        sounds.add(null);
+        
         if(kick!=null) {
-            Sound hopaz = new Sound(kick);
+            Sound hopaz = new Sound(kick, colNumber);
             sounds.add(hopaz);
         }
         if(closedHat!=null) {
-            Sound hopaz1 = new Sound(closedHat);
+            Sound hopaz1 = new Sound(closedHat, colNumber);
             sounds.add(hopaz1);
         }
         if(snare!=null) {
-            Sound hopaz2 = new Sound(snare);
+            Sound hopaz2 = new Sound(snare, colNumber);
             sounds.add(hopaz2);
         }
         if(clap!=null) {
-            Sound hopaz3 = new Sound(clap);
+            Sound hopaz3 = new Sound(clap, colNumber);
             sounds.add(hopaz3);
         }
     }
 
 
-    public void play() {
+    public void play()  {
         timer = new Timer();
         TimerTask task = new TimerTask() {
-            int i = 0;
+            int i = 1;
             @Override
             public void run() {
-                    if(i>=colNumber){
-                        i=0;
+                    if(i > colNumber){
+                        i=1;
                     }
                     for (Sound hopa :
                             sounds) {
-                        hopa.play(i,getVolume());
+                        if(hopa != null)
+                            hopa.play(i,(double) getVolume()/100);
                     }
                     System.out.println("Playing sound on beat : " + i);
                     i++;
             }
 
         };
+        
         timer.schedule(task,0, (long) ((15d/bpm.get())*1000));
+        
     }
 
     public void stop(){
@@ -86,7 +93,8 @@ public class SoundsHolder {
 
     public void addColumn(){
         for(Sound hopa: sounds){
-            hopa.lista.add(false);
+            if(hopa != null)
+                hopa.lista.add(false);
         }
         colNumber++;
     }
@@ -112,6 +120,6 @@ public class SoundsHolder {
     }
 
     public void setVolume(int volume) {
-        this.volume.set(volume);
+        this.volume.setValue(volume);
     }
 }

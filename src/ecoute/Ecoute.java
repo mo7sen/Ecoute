@@ -5,18 +5,20 @@ import ecoute.gui.GridBuilder;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+
+
 public class Ecoute extends Application 
 {    
-    final int   screenWidth = 1000,
-                screenHeight = 600,
-                buttonSize = 40;
-    public int     colNumber = 16,
-            rowNumber = 4;
+    final int buttonSize = 60;
+    public static int   colNumber = 16,
+                        rowNumber = 4;
+    
+    String[] coreSamples = {"KICK", "CLOSEDHAT", "SNARE", "CLAPS"};
     
     public static Stage stage;
     @Override
@@ -25,17 +27,18 @@ public class Ecoute extends Application
         this.stage = primaryStage;
         
         //Build the Control Area of the application
-        FlowPane controlArea = ControlBar.build();
+        BorderPane controlArea = ControlBar.build();
                 
         //Build the Grid area of the application
-        VBox gridArea = new GridBuilder().build(colNumber, rowNumber, buttonSize);
+        VBox gridArea = new GridBuilder().build(colNumber, rowNumber, buttonSize, coreSamples);
         
         VBox appArea = new VBox();
         appArea.getChildren().addAll(controlArea, gridArea);
         
         Group root = new Group(appArea);
         
-        Scene scene = new Scene(root, Color.DARKSLATEGRAY);
+        Scene scene = new Scene(root, Color.DARKSLATEBLUE);
+        
 //        stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("ECOUTE PROTOTYPE");
         stage.setResizable(false);
@@ -43,6 +46,8 @@ public class Ecoute extends Application
         stage.sizeToScene();
         
         stage.show();
+        
+        stage.setOnCloseRequest((event) -> {System.exit(0);});
         
         appArea.setMaxSize(stage.getWidth(), stage.getHeight());
     }

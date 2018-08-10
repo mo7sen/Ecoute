@@ -26,7 +26,10 @@ import javafx.stage.FileChooser;
 import player.Sound;
 import player.SoundsHolder;
 
-import static ecoute.gui.ControlBar.sounds;
+import static ecoute.gui.ControlBar.soundPlayer;
+import java.util.Optional;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 
 public class GridBuilder extends GridPane 
 {
@@ -43,16 +46,26 @@ public class GridBuilder extends GridPane
      * @return VBox containing the whole grid and buttons for adding extra
      *         columns and rows.
      */
-    public VBox build(int columns, int rows, int buttonSize)
+    public VBox build(int columns, int rows, int buttonSize, String[] coreSamples)
     {
         this.columnCount = columns;
         this.rowCount = rows;
         this.defaultButtonSize = buttonSize;
         this.setPadding(new Insets(15));
         
+        for(int r = 1; r <= rowCount; r++)
+        {
+            Label label = new Label(coreSamples[r-1]);
+            label.setPadding(new Insets(5));
+            label.setTextFill(Color.WHITESMOKE);
+            label.setStyle("-fx-font-weight:bold;");
+            
+            
+            this.add(label, 0, r);
+        }
         
-        for(int c = 0; c < columns; c++)
-            for(int r = 0; r < rows; r++)
+        for(int c = 1; c <= columns; c++)
+            for(int r = 1; r <= rows; r++)
                 this.add(new MusicButton(buttonSize, buttonDefault, buttonActive, c, r), c, r);
         
         AnchorPane gridAnchor = new AnchorPane(this); //Only present for the possibility of adding a pointer
@@ -61,7 +74,11 @@ public class GridBuilder extends GridPane
         ScrollPane gridScrollable = new ScrollPane(gridAnchor);
         gridScrollable.setStyle("-fx-background-color:transparent;");
         
-        Button addColumnBtn = new Button("Add Column");
+        TextInputDialog sampleNameDialog = new TextInputDialog();
+        sampleNameDialog.setHeaderText("Enter a name for your sample");
+        sampleNameDialog.setGraphic(null);
+        
+        Button addColumnBtn = new Button("Add Beat");
         Button addRowBtn = new Button("Add Row");
         
         FlowPane gridButtons = new FlowPane(addRowBtn, addColumnBtn);
@@ -69,28 +86,36 @@ public class GridBuilder extends GridPane
         
         
         addColumnBtn.setOnAction((event) -> {
-            this.addColumn();
+            this.addBeat();
         });
         addRowBtn.setOnAction((event) -> {
             FileChooser newSamplePicker = new FileChooser(); // Creates a new FileChooser
             File newSample = newSamplePicker.showOpenDialog(Ecoute.stage);
             try {
-                if(newSample.getName().endsWith(".wav")) //Checks the format of the file
+                if(newSample != null) //Checks the format of the file
                 {
-                    URL newSamplePath = new URL("file:///"+newSample.getPath());
-                    this.addRow();
-                    sounds.sounds.add(new Sound(newSamplePath));
-                    /*
-                    InEdited: Add Logic to add the new sample to the array of samples.
-                    */
-                }
-                else
-                {
-                    // Alert the user that the chosen file format is not supported
-                    Alert headsUp = new Alert(Alert.AlertType.NONE, "Only .wav format is supported.", ButtonType.OK);
-                    headsUp.setTitle("Format not supported");
-                    headsUp.setResizable(false);
-                    headsUp.show();
+                    if(newSample.getName().endsWith(".wav"))
+                    {
+                        URL newSamplePath = new URL("file:///"+newSample.getPath());
+                        Optional<String> sampleName = sampleNameDialog.showAndWait();
+                        if(sampleName.isPresent())
+                        {
+                            this.addRow(sampleName.get());
+                            soundPlayer.sounds.add(new Sound(newSamplePath, columnCount));
+                        }
+                        /*
+                        InEdited: Add Logic to add the new sample to the array of samples.
+                        */
+                        
+                    }
+                    else
+                    {
+                        // Alert the user that the chosen file format is not supported
+                        Alert headsUp = new Alert(Alert.AlertType.NONE, "Only .wav format is supported.", ButtonType.OK);
+                        headsUp.setTitle("Format not supported");
+                        headsUp.setResizable(false);
+                        headsUp.show();
+                    }
                 }
             } catch (Exception e){
                 e.printStackTrace();
@@ -111,10 +136,10 @@ public class GridBuilder extends GridPane
     //Adding an extra column to the Grid for longer pieces
     public void addColumn()
     {
-        for(int r = 0; r < rowCount; r++)
-            this.add(new MusicButton(defaultButtonSize, buttonDefault, buttonActive, columnCount, r), columnCount, r);
         this.columnCount++;
-        sounds.addColumn();
+        for(int r = 1; r <= rowCount; r++)
+            this.add(new MusicButton(defaultButtonSize, buttonDefault, buttonActive, columnCount, r), columnCount, r);
+        soundPlayer.addColumn();
         /*
         InEdited:
                 Here goes the code for editing the Array of Booleans to match
@@ -123,13 +148,27 @@ public class GridBuilder extends GridPane
         
     }
     
+    public void addBeat()
+    {
+        addColumn();
+        addColumn();
+        addColumn();
+        addColumn();
+    }
+    
     //Adding an extra row to the Grid for more Samples to be player 
     //simultaneously
-    public void addRow()
+    public void addRow(String sampleName)
     {
-        for(int c = 0; c < columnCount; c++)
-            this.add(new MusicButton(defaultButtonSize, buttonDefault, buttonActive, c, rowCount), c, rowCount);
         this.rowCount++;
+        
+        Label label = new Label(sampleName);
+        label.setTextFill(Color.WHITESMOKE);
+        label.setStyle("-fx-font-weight:bold;");
+        label.setPadding(new Insets(5));
+        this.add(label, 0, rowCount);
+        for(int c = 1; c <= columnCount; c++)
+            this.add(new MusicButton(defaultButtonSize, buttonDefault, buttonActive, c, rowCount), c, rowCount);
         /*
         InEdited:
                 Here goes the code for editing the Array of Booleans to match
@@ -137,4 +176,6 @@ public class GridBuilder extends GridPane
         */
         
     }
+
+    
 }

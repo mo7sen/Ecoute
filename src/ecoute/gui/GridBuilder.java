@@ -2,12 +2,7 @@ package ecoute.gui;
 
 import ecoute.Ecoute;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -24,12 +19,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import player.Sound;
-import player.SoundsHolder;
 
 import static ecoute.gui.ControlBar.soundPlayer;
 import java.util.Optional;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.BorderPane;
 
 public class GridBuilder extends GridPane 
 {
@@ -37,6 +32,8 @@ public class GridBuilder extends GridPane
     int defaultButtonSize;
     Color buttonDefault = Color.CORNFLOWERBLUE;
     Color buttonActive = Color.CORAL;
+    FileChooser fileChooser = new FileChooser(); // Creates a new FileChooser
+    FileChooser.ExtensionFilter extFil = new FileChooser.ExtensionFilter("Extension For Love", "efl");//InEdited: Change that pls
     
     /**
      * 
@@ -81,16 +78,14 @@ public class GridBuilder extends GridPane
         Button addColumnBtn = new Button("Add Beat");
         Button addRowBtn = new Button("Add Row");
         
-        FlowPane gridButtons = new FlowPane(addRowBtn, addColumnBtn);
-        gridButtons.setAlignment(Pos.BASELINE_RIGHT);
         
         
         addColumnBtn.setOnAction((event) -> {
             this.addBeat();
         });
         addRowBtn.setOnAction((event) -> {
-            FileChooser newSamplePicker = new FileChooser(); // Creates a new FileChooser
-            File newSample = newSamplePicker.showOpenDialog(Ecoute.stage);
+            fileChooser.getExtensionFilters().clear();
+            File newSample = fileChooser.showOpenDialog(Ecoute.stage);
             try {
                 if(newSample != null) //Checks the format of the file
                 {
@@ -122,6 +117,34 @@ public class GridBuilder extends GridPane
             }
 
         });
+        
+        //Adding buttons for the Save/Load functionality
+        Button saveBtn = new Button("Save");
+        Button loadBtn = new Button("Load");
+        
+        saveBtn.setOnAction((event) -> {
+            //InEdited: Change the extension to a more suitable one
+            if(!fileChooser.getExtensionFilters().contains(extFil))
+                fileChooser.getExtensionFilters().add(extFil);
+            File fileToSave = fileChooser.showSaveDialog(Ecoute.stage);
+            
+            //InEdited:
+            //      Do your thing
+        });
+        
+        loadBtn.setOnAction((event) -> {
+            if(!fileChooser.getExtensionFilters().contains(extFil))
+                fileChooser.getExtensionFilters().add(extFil);
+            File fileToLoad = fileChooser.showOpenDialog(Ecoute.stage);
+            //InEdited:
+            //      FU though
+        });
+        
+        //Finalizing the gridButtons
+        FlowPane editGridBtns = new FlowPane(addRowBtn, addColumnBtn);
+        editGridBtns.setAlignment(Pos.BASELINE_RIGHT);
+        FlowPane saveLoad = new FlowPane(saveBtn, loadBtn);
+        BorderPane gridButtons = new BorderPane(null, null, editGridBtns, null, saveLoad);
         
         //Add all previous nodes into a final VBox for a convenient vertical layout
         VBox resultingNode = new VBox();

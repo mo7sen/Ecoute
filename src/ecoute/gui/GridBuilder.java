@@ -3,6 +3,9 @@ package ecoute.gui;
 import ecoute.Ecoute;
 import java.io.File;
 import java.net.URL;
+
+import files.Load;
+import files.Save;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -33,7 +36,7 @@ public class GridBuilder extends GridPane
     Color buttonDefault = Color.CORNFLOWERBLUE;
     Color buttonActive = Color.CORAL;
     FileChooser fileChooser = new FileChooser(); // Creates a new FileChooser
-    FileChooser.ExtensionFilter extFil = new FileChooser.ExtensionFilter("Extension For Love", "efl");//InEdited: Change that pls
+    FileChooser.ExtensionFilter extFil = new FileChooser.ExtensionFilter("Ecoute Drum Sequence ", "*.eds");//InEdited: Change that pls
     
     /**
      * 
@@ -127,17 +130,24 @@ public class GridBuilder extends GridPane
             if(!fileChooser.getExtensionFilters().contains(extFil))
                 fileChooser.getExtensionFilters().add(extFil);
             File fileToSave = fileChooser.showSaveDialog(Ecoute.stage);
+            Save.Save(fileToSave);
             
             //InEdited:
             //      Do your thing
+            //Mo7sen:
+            //      Did my thing
+
         });
         
         loadBtn.setOnAction((event) -> {
             if(!fileChooser.getExtensionFilters().contains(extFil))
                 fileChooser.getExtensionFilters().add(extFil);
             File fileToLoad = fileChooser.showOpenDialog(Ecoute.stage);
+            Load.Load(fileToLoad);
             //InEdited:
             //      FU though
+            //Mo7sen :
+            //      7bb tslm
         });
         
         //Finalizing the gridButtons

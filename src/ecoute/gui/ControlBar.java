@@ -13,8 +13,8 @@ import player.SoundsHolder;
 
 public class ControlBar
 {
-    static int          minBPM = 10,    //InEdited:
-                        maxBPM = 120,
+    static int          minBPM = 33,    //InEdited:
+                        maxBPM = 200,
                         sliderRadius = 40;   //      Change BPM values to more convenient ones
     static Button       playBtn = new Button("\u23F5"),
                         stopBtn = new Button("\u23F9");

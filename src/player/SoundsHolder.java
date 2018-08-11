@@ -29,7 +29,7 @@ public class SoundsHolder {
         initSounds();
     }
 
-    private void initSounds(){
+    public void initSounds(){
 
         try {
             kick = this.getClass().getClassLoader().getResource("Samples/Kick.wav").toURI().toURL();
@@ -80,11 +80,10 @@ public class SoundsHolder {
                     System.out.println("Playing sound on beat : " + i);
                     i++;
             }
-
         };
         
         timer.schedule(task,0, (long) ((15d/bpm.get())*1000));
-        
+
     }
 
     public void stop(){

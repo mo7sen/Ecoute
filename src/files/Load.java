@@ -4,11 +4,12 @@ import ecoute.gui.ControlBar;
 import player.Sound;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Load {
 
-
-    public static void Load(File file){
+    public static void loadSequence(File file){
         System.out.println("Opening file "  + file.getAbsolutePath());
         FileInputStream fis;
         ObjectInputStream ois;
@@ -16,39 +17,38 @@ public class Load {
             try {
                 fis = new FileInputStream(file);
                 ois = new ObjectInputStream(fis);
+                int colNum = ois.read();
+                int rowNum = ois.read();
 
-                int columnNum = ois.readInt();
-                int rowNum = ois.readInt();
-
-                ControlBar.soundPlayer.sounds.clear();
+                ControlBar.soundPlayer.sampleList.clear();
                 ControlBar.soundPlayer.initSounds();
-
-                if(rowNum>4){
-                    for(int i = 4;i<=rowNum;i++) {
-                        ControlBar.soundPlayer.sounds.add(null);
+                
+                
+                if(colNum>ecoute.Ecoute.colNumber){
+                    for(Sound sample:ControlBar.soundPlayer.sampleList){
+                        if(sample != null)
+                            sample.timeMap = new ArrayList<>(Collections.nCopies(colNum, false));
+                        
                     }
                 }
-                if(columnNum>16){
-                    for(Sound hopa:ControlBar.soundPlayer.sounds){
-                        for(int i=16;i<=columnNum;i++){
-                            hopa.lista.add(false);
-                        }
+                
+                for(Sound sound : ControlBar.soundPlayer.sampleList)
+                    if(sound != null)
+                    {
+                        sound.timeMap = (ArrayList<Boolean>) ois.readObject();
                     }
-                }
-
-
-                int temp = 0;
-                for(int i = 1;i < rowNum;i++){
-                    for(int j = 1;j < columnNum;j++)
-                        ControlBar.soundPlayer.sounds.get(i).lista.set(j,ois.readBoolean());
-                }
                 fis.close();
                 ois.close();
-
-                throw new IOException();
+                
+                ecoute.Ecoute.grid.clear();
+                ecoute.Ecoute.grid.updateButtons();
+                
             } catch (IOException ex) {
+                ex.printStackTrace();
+            } catch (ClassNotFoundException ex) {
                 ex.printStackTrace();
             }
         }
     }
+    
 }

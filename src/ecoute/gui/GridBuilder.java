@@ -31,10 +31,8 @@ import javafx.scene.layout.BorderPane;
 
 public class GridBuilder extends GridPane 
 {
-    int columnCount, rowCount;
-    int defaultButtonSize;
-    Color buttonDefault = Color.CORNFLOWERBLUE;
-    Color buttonActive = Color.CORAL;
+    Color buttonDefault = Color.ORCHID;
+    Color buttonActive = Color.OLIVEDRAB;
     FileChooser fileChooser = new FileChooser(); // Creates a new FileChooser
     FileChooser.ExtensionFilter extFil = new FileChooser.ExtensionFilter("Ecoute Drum Sequence ", "*.eds");//InEdited: Change that pls
     
@@ -46,14 +44,14 @@ public class GridBuilder extends GridPane
      * @return VBox containing the whole grid and buttons for adding extra
      *         columns and rows.
      */
-    public VBox build(int columns, int rows, int buttonSize, String[] coreSamples)
+    public VBox build()
     {
-        this.columnCount = columns;
-        this.rowCount = rows;
-        this.defaultButtonSize = buttonSize;
+        
+        String[] coreSamples = {"KICK", "CLOSEDHAT", "SNARE", "CLAPS"};
+        
         this.setPadding(new Insets(15));
         
-        for(int r = 1; r <= rowCount; r++)
+        for(int r = 1; r <= ecoute.Ecoute.rowNumber; r++)
         {
             Label label = new Label(coreSamples[r-1]);
             label.setPadding(new Insets(5));
@@ -64,12 +62,12 @@ public class GridBuilder extends GridPane
             this.add(label, 0, r);
         }
         
-        for(int c = 1; c <= columns; c++)
-            for(int r = 1; r <= rows; r++)
-                this.add(new MusicButton(buttonSize, buttonDefault, buttonActive, c, r), c, r);
+        for(int c = 1; c <= ecoute.Ecoute.colNumber; c++)
+            for(int r = 1; r <= ecoute.Ecoute.rowNumber; r++)
+                this.add(new MusicButton(ecoute.Ecoute.buttonSize, buttonDefault, buttonActive, c, r), c, r);
         
         AnchorPane gridAnchor = new AnchorPane(this); //Only present for the possibility of adding a pointer
-        gridAnchor.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        gridAnchor.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         
         ScrollPane gridScrollable = new ScrollPane(gridAnchor);
         gridScrollable.setStyle("-fx-background-color:transparent;");
@@ -99,7 +97,7 @@ public class GridBuilder extends GridPane
                         if(sampleName.isPresent())
                         {
                             this.addRow(sampleName.get());
-                            soundPlayer.sounds.add(new Sound(newSamplePath, columnCount));
+                            soundPlayer.sampleList.add(new Sound(newSamplePath));
                         }
                         /*
                         InEdited: Add Logic to add the new sample to the array of samples.
@@ -124,18 +122,23 @@ public class GridBuilder extends GridPane
         //Adding buttons for the Save/Load functionality
         Button saveBtn = new Button("Save");
         Button loadBtn = new Button("Load");
+//        saveBtn.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+//        saveBtn.setTextFill(Color.WHITESMOKE);
+//        saveBtn.setStyle("-fx-font-weight:bold;");
         
         saveBtn.setOnAction((event) -> {
             //InEdited: Change the extension to a more suitable one
             if(!fileChooser.getExtensionFilters().contains(extFil))
                 fileChooser.getExtensionFilters().add(extFil);
             File fileToSave = fileChooser.showSaveDialog(Ecoute.stage);
-            Save.Save(fileToSave);
+            Save.saveSequence(fileToSave);
             
             //InEdited:
             //      Do your thing
             //Mo7sen:
             //      Did my thing
+            //InEdited:
+            //      Fuck your thing
 
         });
         
@@ -143,7 +146,7 @@ public class GridBuilder extends GridPane
             if(!fileChooser.getExtensionFilters().contains(extFil))
                 fileChooser.getExtensionFilters().add(extFil);
             File fileToLoad = fileChooser.showOpenDialog(Ecoute.stage);
-            Load.Load(fileToLoad);
+            Load.loadSequence(fileToLoad);
             //InEdited:
             //      FU though
             //Mo7sen :
@@ -158,7 +161,7 @@ public class GridBuilder extends GridPane
         
         //Add all previous nodes into a final VBox for a convenient vertical layout
         VBox resultingNode = new VBox();
-        resultingNode.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        resultingNode.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         resultingNode.getChildren().add(gridButtons);
         resultingNode.getChildren().add(gridScrollable);
         
@@ -169,9 +172,9 @@ public class GridBuilder extends GridPane
     //Adding an extra column to the Grid for longer pieces
     public void addColumn()
     {
-        this.columnCount++;
-        for(int r = 1; r <= rowCount; r++)
-            this.add(new MusicButton(defaultButtonSize, buttonDefault, buttonActive, columnCount, r), columnCount, r);
+        ecoute.Ecoute.colNumber++;
+        for(int r = 1; r <= ecoute.Ecoute.rowNumber; r++)
+            this.add(new MusicButton(ecoute.Ecoute.buttonSize, buttonDefault, buttonActive, ecoute.Ecoute.colNumber, r), ecoute.Ecoute.colNumber, r);
         soundPlayer.addColumn();
         /*
         InEdited:
@@ -193,21 +196,45 @@ public class GridBuilder extends GridPane
     //simultaneously
     public void addRow(String sampleName)
     {
-        this.rowCount++;
+        ecoute.Ecoute.rowNumber++;
         
         Label label = new Label(sampleName);
         label.setTextFill(Color.WHITESMOKE);
         label.setStyle("-fx-font-weight:bold;");
         label.setPadding(new Insets(5));
-        this.add(label, 0, rowCount);
-        for(int c = 1; c <= columnCount; c++)
-            this.add(new MusicButton(defaultButtonSize, buttonDefault, buttonActive, c, rowCount), c, rowCount);
+        this.add(label, 0, ecoute.Ecoute.rowNumber);
+        for(int c = 1; c <= ecoute.Ecoute.colNumber; c++)
+            this.add(new MusicButton(ecoute.Ecoute.buttonSize, buttonDefault, buttonActive, c, ecoute.Ecoute.rowNumber), c, ecoute.Ecoute.rowNumber);
         /*
         InEdited:
                 Here goes the code for editing the Array of Booleans to match
                 the new dimensions of the grid.
         */
         
+    }
+    
+    public void clear()
+    {
+        this.getChildren().forEach((t) -> {
+            if(t instanceof MusicButton && ((MusicButton) t).active)
+                ((MusicButton) t).trigger();
+        });
+    }
+    
+    public void updateButtons()
+    {
+//        for(int c = 1; c <= ecoute.Ecoute.colNumber; c++)
+//            for(int r = 1; r<= ecoute.Ecoute.rowNumber; r++)
+//                if(ControlBar.soundPlayer.sampleList.get(r).timeMap.get(c) !=)
+        this.getChildren().forEach((node) -> {
+            if(node instanceof MusicButton && 
+                    ((MusicButton)node).active != 
+                    ControlBar.soundPlayer.
+                            sampleList.get(((MusicButton)node).rowIndex).
+                            timeMap.get(((MusicButton)node).colIndex)
+                    )
+                ((MusicButton)node).trigger();
+        });
     }
 
     

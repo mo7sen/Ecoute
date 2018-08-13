@@ -1,101 +1,121 @@
 package player;
 
 import ecoute.gui.ControlBar;
+
+import java.io.Serializable;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.SimpleIntegerProperty;
 
-public class SoundsHolder {
-    public ArrayList<Sound> sounds = new ArrayList<>();
+public class SoundsHolder extends Thread implements Serializable{
+    public ArrayList<Sound> sampleList = new ArrayList<Sound>();
+    public ArrayList<URL> samplePaths = new ArrayList<URL>();
+    String[] coreSamples = new String[] {"Samples/Kick.wav",
+                                    "Samples/ClosedHat.wav",
+                                    "Samples/Snare.wav",
+                                    "Samples/Clap.wav"};
     public IntegerProperty bpm = new SimpleIntegerProperty();
+    
     public IntegerProperty volume = new SimpleIntegerProperty();
-    int colNumber = ecoute.Ecoute.colNumber;
-    Timer timer;
-    URL kick = null,
-            snare = null,
-            clap = null,
-            closedHat = null;
+    
 
-    public SoundsHolder(){
+    public SoundsHolder() throws URISyntaxException, MalformedURLException{
+        
         bpm.bind(ControlBar.bpmSlider.valueProperty());
         volume.bind(ControlBar.volSlider.valueProperty());
         
+        for(String sample : coreSamples)
+            samplePaths.add(this.getClass().getClassLoader().getResource(sample).toURI().toURL());
+        
         initSounds();
     }
-
-    public void initSounds(){
-
+    
+    
+    @Override
+    public void run()
+    {
         try {
-            kick = this.getClass().getClassLoader().getResource("Samples/Kick.wav").toURI().toURL();
-            closedHat = this.getClass().getClassLoader().getResource("Samples/ClosedHat.wav").toURI().toURL();
-            snare = this.getClass().getClassLoader().getResource("Samples/Snare.wav").toURI().toURL();
-            clap = this.getClass().getClassLoader().getResource("Samples/Clap.wav").toURI().toURL();
+            SoundsHolder.this.play();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SoundsHolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+
+    public void initSounds(String... samples){
+        
+        
+        try {
+            if(samples.length > 0)
+                for(String sample : samples)
+                    samplePaths.add(new URL(sample));
+            
+            sampleList.clear();
+            sampleList.add(null);
+            
+            for(URL samplePath : samplePaths)
+                sampleList.add(
+                        new Sound(samplePath)
+                );
+            
         } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+            System.out.println("Exception while adding samples");
         }
 
-        sounds.add(null);
         
-        if(kick!=null) {
-            Sound hopaz = new Sound(kick, colNumber);
-            sounds.add(hopaz);
-        }
-        if(closedHat!=null) {
-            Sound hopaz1 = new Sound(closedHat, colNumber);
-            sounds.add(hopaz1);
-        }
-        if(snare!=null) {
-            Sound hopaz2 = new Sound(snare, colNumber);
-            sounds.add(hopaz2);
-        }
-        if(clap!=null) {
-            Sound hopaz3 = new Sound(clap, colNumber);
-            sounds.add(hopaz3);
-        }
     }
 
 
-    public void play()  {
-        timer = new Timer();
-        TimerTask task = new TimerTask() {
-            int i = 1;
-            @Override
-            public void run() {
-                    if(i > colNumber){
-                        i=1;
-                    }
-                    for (Sound hopa :
-                            sounds) {
-                        if(hopa != null)
-                            hopa.play(i,(double) getVolume()/100);
-                    }
-                    System.out.println("Playing sound on beat : " + i);
-                    i++;
+    public void play() throws InterruptedException  {
+        int i = 1;
+        while(true)
+        {
+            if(i > ecoute.Ecoute.colNumber){
+                i=1;
             }
-        };
-        
-        timer.schedule(task,0, (long) ((15d/bpm.get())*1000));
-
+            
+            for (Sound sample : sampleList) {
+                if(sample != null && sample.timeMap.get(i))
+                    sample.play((double) getVolume()/100);
+            }
+            
+            i++;
+            
+            Thread.sleep((long) ((15d/bpm.get())*1000));
+            
+            for (Sound sample : sampleList)
+                if(sample != null)
+                    sample.stop();
+        }
+    }
+    
+    public void end()
+    {
+        this.suspend();
+    }
+    
+    public void addRow(String path) throws MalformedURLException
+    {
+        initSounds(path);
     }
 
-    public void stop(){
-        timer.cancel();
-    }
+    
 
     public void addColumn(){
-        for(Sound hopa: sounds){
-            if(hopa != null)
-                hopa.lista.add(false);
+        for(Sound sample: sampleList){
+            if(sample != null)
+                sample.timeMap.add(false);
         }
-        colNumber++;
+        
     }
 
     public int getBpm() {
@@ -121,4 +141,8 @@ public class SoundsHolder {
     public void setVolume(int volume) {
         this.volume.setValue(volume);
     }
+
+//    public void initSounds() {
+//        initSounds();
+//    }
 }

@@ -43,24 +43,26 @@ public class MusicButton extends Rectangle
         //InEdited: Every single Button knows the index of the boolean to change
         //          in your array. Have Fun!!
         this.setOnMouseClicked((event) -> {
+            this.trigger();
+            soundPlayer.sampleList.get(rowIndex).timeMap.set(colIndex, this.active);
+        });
+        //EndOf: Handling The Clicking Event
+        
+    }
+    
+    public void trigger()
+    {
             if(!active)
             {
                 this.setFill(activeColor);
                 this.setStroke(activeBorderColor);
-
-                //this line sets the boolean array in position of column index inside the array of sounds
-                soundPlayer.sounds.get(rowIndex).lista.set(colIndex,true);
             }
             else
             {
                 this.setFill(defaultColor);
                 this.setStroke(defaultBorderColor);
-                //this line does the opposite
-                soundPlayer.sounds.get(rowIndex).lista.set(colIndex,false);
             }
             active = !active;
-        });
-        //EndOf: Handling The Clicking Event
     }
 
 

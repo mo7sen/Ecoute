@@ -14,12 +14,13 @@ import javafx.stage.Stage;
 
 public class Ecoute extends Application 
 {    
-    final int buttonSize = 60;
+    public static int   buttonSize = 60;
     public static int   colNumber = 16,
                         rowNumber = 4;
     
-    String[] coreSamples = {"KICK", "CLOSEDHAT", "SNARE", "CLAPS"};
     
+    
+    public static GridBuilder grid;
     public static Stage stage;
     @Override
     public void start(Stage primaryStage) 
@@ -30,14 +31,15 @@ public class Ecoute extends Application
         BorderPane controlArea = ControlBar.build();
                 
         //Build the Grid area of the application
-        VBox gridArea = new GridBuilder().build(colNumber, rowNumber, buttonSize, coreSamples);
+        grid = new GridBuilder();
+        VBox gridArea = grid.build();
         
         VBox appArea = new VBox();
         appArea.getChildren().addAll(controlArea, gridArea);
         
         Group root = new Group(appArea);
         
-        Scene scene = new Scene(root, Color.DARKSLATEBLUE);
+        Scene scene = new Scene(root, Color.BLACK);
         
 //        stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("ECOUTE PROTOTYPE");

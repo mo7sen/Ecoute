@@ -3,7 +3,7 @@ package files;
 import ecoute.gui.ControlBar;
 
 import java.io.*;
-import java.util.ArrayList;
+import player.Sound;
 
 public class Save {
 
@@ -21,47 +21,38 @@ public class Save {
     *
     * */
 
-    public static void Save(File file){
+    public static void saveSequence(File file){
         FileOutputStream fos;
         ObjectOutputStream oos;
-
         //gets number of columns
         int rowNum = ControlBar
                 .soundPlayer
-                .sounds
-                .size()-1;
+                .sampleList
+                .size() - 1;
 
         //gets number of rows
         int columnNum = ControlBar
                 .soundPlayer
-                .sounds
+                .sampleList
                 .get(1)
-                .lista
-                .size()-1;
+                .timeMap
+                .size() - 1;
 
 
         if (file != null) {
             try {
                 fos = new FileOutputStream(file);
                 oos = new ObjectOutputStream(fos);
-                oos.writeInt(columnNum);
-                oos.writeInt(rowNum);
-                System.out.println(columnNum);
-                System.out.println(rowNum);
-
-                int temp = 0;
-                for(int i = 1;i <rowNum;i++){
-                    for(int j = 1;j <columnNum;j++) {
-                        oos.writeBoolean(ControlBar.soundPlayer.sounds.get(i).lista.get(j));
-                        System.out.println(ControlBar.soundPlayer.sounds.get(i).lista.get(j));
-                    }
-                }
-                fos.close();
+                oos.write(columnNum);
+                oos.write(rowNum);
+                for(Sound sound : ControlBar.soundPlayer.sampleList)
+                    if(sound != null)
+                        oos.writeObject(sound.timeMap);
+                
                 oos.close();
-
-                throw new IOException();
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
+                fos.close();
+            } catch (IOException | NullPointerException ex) {
+                ex.printStackTrace();
             }
         }
 

@@ -1,5 +1,7 @@
 package ecoute.gui;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -24,10 +26,12 @@ public class ControlBar
     public static RadSlider     bpmSlider = new RadSlider(minBPM, maxBPM, "Bpm", Color.CORNFLOWERBLUE, sliderRadius, sliderRadius, sliderRadius*0.6),
                                 volSlider = new RadSlider(0, 100, "%", Color.AQUA, sliderRadius, sliderRadius, sliderRadius*0.6);
     
-    public static SoundsHolder soundPlayer = new SoundsHolder(); 
+    public static SoundsHolder soundPlayer; 
     
-    public static BorderPane build()
+    public static BorderPane build() throws URISyntaxException, MalformedURLException
     {
+        soundPlayer = new SoundsHolder();
+        
         //Add core nodes to FlowPane
         HBox radSliders = new HBox(bpmSlider, volSlider);
         bpmSlider.setLayoutX(-3 * sliderRadius);
@@ -47,7 +51,10 @@ public class ControlBar
             stopBtn.setDisable(false);
             
             //InEdited: Play button pressed
-            soundPlayer.play();
+            if(soundPlayer.isAlive())
+                soundPlayer.resume();
+            else
+                soundPlayer.start();
         });
         //EndOf: Set up functionality of the Play button
         
@@ -62,7 +69,7 @@ public class ControlBar
             stopBtn.setDisable(true);
             
             //InEdited: Stop button pressed
-            soundPlayer.stop();
+            soundPlayer.end();
         });
         //EndOf: Set up functionality of the Stop button
         

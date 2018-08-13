@@ -2,6 +2,7 @@ package ecoute;
 
 import ecoute.gui.ControlBar;
 import ecoute.gui.GridBuilder;
+import ecoute.synth.Synth;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -52,6 +53,8 @@ public class Ecoute extends Application
         stage.setOnCloseRequest((event) -> {System.exit(0);});
         
         appArea.setMaxSize(stage.getWidth(), stage.getHeight());
+
+        Synth synth = new Synth(scene);
     }
 
     /**

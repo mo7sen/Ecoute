@@ -1,54 +1,53 @@
 package files;
 
 import ecoute.gui.ControlBar;
-import player.Sound;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import player.SoundsHolder;
 
 public class Load {
 
-    public static void loadSequence(File file){
-        System.out.println("Opening file "  + file.getAbsolutePath());
+    public static void loadSequence(File file) throws URISyntaxException, MalformedURLException, UnsupportedAudioFileException{
+        if(file == null)
+            return;
         FileInputStream fis;
         ObjectInputStream ois;
-        if (file != null) {
-            try {
-                fis = new FileInputStream(file);
-                ois = new ObjectInputStream(fis);
-                int colNum = ois.read();
-                int rowNum = ois.read();
+        try {
+            ControlBar.soundPlayer = new SoundsHolder();
 
-                ControlBar.soundPlayer.sampleList.clear();
-                ControlBar.soundPlayer.initSounds();
-                
-                
-                if(colNum>ecoute.Ecoute.colNumber){
-                    for(Sound sample:ControlBar.soundPlayer.sampleList){
-                        if(sample != null)
-                            sample.timeMap = new ArrayList<>(Collections.nCopies(colNum, false));
-                        
-                    }
-                }
-                
-                for(Sound sound : ControlBar.soundPlayer.sampleList)
-                    if(sound != null)
-                    {
-                        sound.timeMap = (ArrayList<Boolean>) ois.readObject();
-                    }
-                fis.close();
-                ois.close();
-                
-                ecoute.Ecoute.grid.clear();
-                ecoute.Ecoute.grid.updateButtons();
-                
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } catch (ClassNotFoundException ex) {
-                ex.printStackTrace();
-            }
+            fis = new FileInputStream(file);
+            ois = new ObjectInputStream(fis);
+            int colNum = ois.read();
+            int rowNum = ois.read();
+
+            ecoute.Ecoute.colNumberInit = colNum;
+            ecoute.Ecoute.rowNumberInit = rowNum;
+
+            for(int i = ecoute.Ecoute.defaultSamples; i < rowNum; i++)
+                ControlBar.soundPlayer.samplePaths.add((URL)ois.readObject());
+
+
+            ArrayList<ArrayList<Boolean>> timeMaps = (ArrayList<ArrayList<Boolean>>) ois.readObject();
+            
+            ois.close();
+            fis.close();
+
+            ControlBar.soundPlayer.initSounds();
+            
+            for(int i = 1; i <= rowNum; i++)
+                ControlBar.soundPlayer.sampleList.get(i).timeMap = timeMaps.get(i-1);
+
+            ecoute.Ecoute.grid.reset();
+            ecoute.Ecoute.grid.updateButtons();
+
+        } catch (IOException | ClassNotFoundException ex) {
         }
     }
-    
 }
+    
+

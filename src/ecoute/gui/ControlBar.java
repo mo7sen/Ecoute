@@ -2,15 +2,22 @@ package ecoute.gui;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Callback;
 import player.SoundsHolder;
 
 public class ControlBar
@@ -23,20 +30,28 @@ public class ControlBar
     static Label        bpmLabel = new Label(),
                         volLabel = new Label();
     
-    public static RadSlider     bpmSlider = new RadSlider(minBPM, maxBPM, "Bpm", Color.CORNFLOWERBLUE, sliderRadius, sliderRadius, sliderRadius*0.6),
-                                volSlider = new RadSlider(0, 100, "%", Color.AQUA, sliderRadius, sliderRadius, sliderRadius*0.6);
+    public static RadSlider     bpmSlider = new RadSlider(minBPM, maxBPM, "Bpm", new Color((double)30/255,(double) 20/255,(double) 10/255, 1), sliderRadius, sliderRadius, sliderRadius*0.6),
+                                volSlider = new RadSlider(0, 100, "%", new Color((double)30/255,(double) 20/255,(double) 10/255, 1), sliderRadius, sliderRadius, sliderRadius*0.6);
     
     public static SoundsHolder soundPlayer; 
+    
+    public static ComboBox synthSounds;
     
     public static BorderPane build() throws URISyntaxException, MalformedURLException
     {
         soundPlayer = new SoundsHolder();
         
-        //Add core nodes to FlowPane
+        
+        
+        synthSounds = new ComboBox();
+        synthSounds.setBackground(Background.EMPTY);
+        synthSounds.setStyle("-fx-text-fill:brown;");
+        
         HBox radSliders = new HBox(bpmSlider, volSlider);
         bpmSlider.setLayoutX(-3 * sliderRadius);
         FlowPane controlPane = new FlowPane(playBtn, stopBtn);
-        BorderPane pane = new BorderPane(null, null, radSliders, null, controlPane);
+        BorderPane pane = new BorderPane(synthSounds, null, radSliders, null, controlPane);
+//        pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         radSliders.setSpacing(50);
         pane.setPadding(new Insets(15));
         

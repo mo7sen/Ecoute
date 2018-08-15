@@ -1,18 +1,21 @@
 package ecoute.synth;
 
+import ecoute.gui.ControlBar;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import javax.sound.midi.*;
-import java.util.ArrayList;
 
 
 public class Synth {
     int instrument = 40;
     int velocity = 600;
-    ArrayList<KeyCode> keyCodes= new ArrayList();
+//    ArrayList<KeyCode> keyCodes= new ArrayList();
 
     public Synth(Scene scene){
 
@@ -23,11 +26,29 @@ public class Synth {
             final MidiChannel[] mc = syn.getChannels();
             syn.loadAllInstruments(syn.getDefaultSoundbank());
             Instrument[] instr = syn.getAvailableInstruments();
+            
+            
+            
+/*         
+            ControlBar.synthSounds.getItems().add(""); //InEdited: Add whatever you need
+            
+            ControlBar.synthSounds.getSelectionModel().selectedIndexProperty().addListener(new InvalidationListener() {
+                @Override
+                public void invalidated(Observable observable) {
+            
+                    ControlBar.synthSounds.getSelectionModel().getSelectedIndex();//} ->  Pick one of these two
+                    ControlBar.synthSounds.getSelectionModel().getSelectedItem(); //} ->
+                    
+                    //InEdited:
+                    //  Add the logic
+                }
+            });
 
-            for (Instrument ins:instr
-                 ) {
-                System.out.println(ins);
-            }
+//            ControlBar.synthSounds.getSelectionModel().select();    Select Index of default item
+            ControlBar.synthSounds.getSelectionModel().selectFirst(); or select first
+*/
+
+
             syn.loadInstrument(instr[instrument]);
             mc[5].programChange(instr[instrument].getPatch().getProgram());
 
@@ -39,7 +60,7 @@ public class Synth {
                         //Note C
                         case A:{
                             mc[5].noteOn(60, velocity);
-
+                            
                         }
                             break;
                         case K:{
@@ -189,6 +210,17 @@ public class Synth {
         }
         catch (MidiUnavailableException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static class ChangeListenerImpl implements ChangeListener<String> {
+
+        public ChangeListenerImpl() {
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
 }

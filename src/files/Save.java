@@ -3,6 +3,7 @@ package files;
 import ecoute.gui.ControlBar;
 
 import java.io.*;
+import java.util.ArrayList;
 import player.Sound;
 
 public class Save {
@@ -25,18 +26,20 @@ public class Save {
         FileOutputStream fos;
         ObjectOutputStream oos;
         //gets number of columns
-        int rowNum = ControlBar
-                .soundPlayer
-                .sampleList
-                .size() - 1;
+        int rowNum = ecoute.Ecoute.rowNumber;
+//                ControlBar
+//                .soundPlayer
+//                .sampleList
+//                .size() - 1;
 
         //gets number of rows
-        int columnNum = ControlBar
-                .soundPlayer
-                .sampleList
-                .get(1)
-                .timeMap
-                .size() - 1;
+        int columnNum = ecoute.Ecoute.colNumber;
+//                ControlBar
+//                .soundPlayer
+//                .sampleList
+//                .get(1)
+//                .timeMap
+//                .size() - 1;
 
 
         if (file != null) {
@@ -45,9 +48,17 @@ public class Save {
                 oos = new ObjectOutputStream(fos);
                 oos.write(columnNum);
                 oos.write(rowNum);
-                for(Sound sound : ControlBar.soundPlayer.sampleList)
-                    if(sound != null)
-                        oos.writeObject(sound.timeMap);
+                
+//                oos.writeObject(ControlBar.soundPlayer.samplePaths);
+                for(int i = ecoute.Ecoute.defaultSamples ; i < ecoute.Ecoute.rowNumber ; i++)
+                    oos.writeObject(ControlBar.soundPlayer.samplePaths.get(i));
+                        
+                ArrayList<ArrayList<Boolean>> timeMaps = new ArrayList<ArrayList<Boolean>>();
+//                timeMaps = new ArrayList<Boolean>[rowNum];
+                for(int i = 1; i <= ecoute.Ecoute.rowNumber; i++)
+                        timeMaps.add(ControlBar.soundPlayer.sampleList.get(i).timeMap);
+                
+                oos.writeObject(timeMaps);
                 
                 oos.close();
                 fos.close();

@@ -125,7 +125,7 @@ public class RadSlider extends Pane
         label.setStyle("-fx-font-weight:bold;");
         label.setFont(Font.font(labelWidth/4));
         
-        label.setBlendMode(BlendMode.EXCLUSION);
+//        label.setBlendMode(BlendMode.EXCLUSION);
 
         label.setLayoutX(RX + StrokeWidth/2 - labelWidth/2 + padding);
         label.setLayoutY(RY + StrokeWidth/2 - labelHeight/2 + padding);

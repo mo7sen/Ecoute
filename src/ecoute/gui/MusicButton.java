@@ -32,11 +32,13 @@ public class MusicButton extends Rectangle
         this.setWidth(sideLength * (1-borderRatio));
         this.setHeight(sideLength * (1-borderRatio));
         
-        this.setArcHeight(sideLength/2);
-        this.setArcWidth(sideLength/2);
+        this.setArcHeight(sideLength/4);
+        this.setArcWidth(sideLength/4);
         this.setFill(defaultColor);
         this.setStroke(defaultBorderColor);
         this.setStrokeWidth(sideLength * borderRatio);
+        
+        
         //EndOf: Setting up shape properties
         
         //Handling The Clicking Event

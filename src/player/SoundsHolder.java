@@ -1,6 +1,7 @@
 package player;
 
 import ecoute.gui.ControlBar;
+import java.io.IOException;
 
 import java.io.Serializable;
 import javafx.beans.property.IntegerProperty;
@@ -14,6 +15,8 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleIntegerProperty;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SoundsHolder extends Thread implements Serializable{
     public ArrayList<Sound> sampleList = new ArrayList<Sound>();
@@ -32,10 +35,15 @@ public class SoundsHolder extends Thread implements Serializable{
         bpm.bind(ControlBar.bpmSlider.valueProperty());
         volume.bind(ControlBar.volSlider.valueProperty());
         
-        for(String sample : coreSamples)
-            samplePaths.add(this.getClass().getClassLoader().getResource(sample).toURI().toURL());
+        this.addDefault();
         
-        initSounds();
+        try {
+            initSounds();
+        } catch (UnsupportedAudioFileException ex) {
+            Logger.getLogger(SoundsHolder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SoundsHolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     
@@ -46,36 +54,39 @@ public class SoundsHolder extends Thread implements Serializable{
             SoundsHolder.this.play();
         } catch (InterruptedException ex) {
             Logger.getLogger(SoundsHolder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SoundsHolder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (LineUnavailableException ex) {
+            Logger.getLogger(SoundsHolder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     
+    public void addDefault() throws URISyntaxException, MalformedURLException
+    {
+        for(String sample : coreSamples)
+            samplePaths.add(this.getClass().getClassLoader().getResource(sample).toURI().toURL());
+    }
 
-    public void initSounds(String... samples){
+    
+    public void initSounds() throws URISyntaxException, MalformedURLException, UnsupportedAudioFileException, IOException{    
         
         
-        try {
-            if(samples.length > 0)
-                for(String sample : samples)
-                    samplePaths.add(new URL(sample));
-            
-            sampleList.clear();
-            sampleList.add(null);
-            
-            for(URL samplePath : samplePaths)
-                sampleList.add(
-                        new Sound(samplePath)
-                );
-            
-        } catch (MalformedURLException e) {
-            System.out.println("Exception while adding samples");
-        }
-
+//        for(Sound sample : sampleList)
+//            if(sample != null)
+//                sample.destroy();
         
+        sampleList.clear();
+        
+        sampleList.add(null);
+        
+        
+        for(URL samplePath : samplePaths)
+            sampleList.add(new Sound(samplePath));
     }
 
 
-    public void play() throws InterruptedException  {
+    public void play() throws InterruptedException, IOException, LineUnavailableException  {
         int i = 1;
         while(true)
         {
@@ -91,10 +102,6 @@ public class SoundsHolder extends Thread implements Serializable{
             i++;
             
             Thread.sleep((long) ((15d/bpm.get())*1000));
-            
-            for (Sound sample : sampleList)
-                if(sample != null)
-                    sample.stop();
         }
     }
     
@@ -103,9 +110,20 @@ public class SoundsHolder extends Thread implements Serializable{
         this.suspend();
     }
     
-    public void addRow(String path) throws MalformedURLException
+    public void addRows(String... paths) throws MalformedURLException, URISyntaxException
     {
-        initSounds(path);
+        if(paths.length != 0)
+        {
+            for(String path : paths)
+                    samplePaths.add(new URL(path));
+            try {
+                initSounds();
+            } catch (UnsupportedAudioFileException ex) {
+                Logger.getLogger(SoundsHolder.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(SoundsHolder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     
@@ -142,7 +160,4 @@ public class SoundsHolder extends Thread implements Serializable{
         this.volume.setValue(volume);
     }
 
-//    public void initSounds() {
-//        initSounds();
-//    }
 }

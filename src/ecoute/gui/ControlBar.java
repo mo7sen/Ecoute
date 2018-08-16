@@ -2,22 +2,16 @@ package ecoute.gui;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.util.Callback;
 import player.SoundsHolder;
 
 public class ControlBar
@@ -85,6 +79,7 @@ public class ControlBar
             
             //InEdited: Stop button pressed
             soundPlayer.end();
+            
         });
         //EndOf: Set up functionality of the Stop button
         

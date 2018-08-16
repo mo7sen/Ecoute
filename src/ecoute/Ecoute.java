@@ -6,19 +6,17 @@ import ecoute.synth.Synth;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import javafx.application.Application;
-import javafx.geometry.Insets;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -35,14 +33,14 @@ public class Ecoute extends Application
                         colNumberInit = colNumber,
                         defaultSamples = 4;
     
-    
-    
     public static GridBuilder grid;
     public static Stage stage;
+    
     @Override
     public void start(Stage primaryStage) throws URISyntaxException, MalformedURLException 
     {
         this.stage = primaryStage;
+        Platform.setImplicitExit(false);
         
         //Build the Control Area of the application
         BorderPane controlArea = ControlBar.build();
@@ -61,15 +59,15 @@ public class Ecoute extends Application
         
         StackPane root = new StackPane(appArea);
         
-        Scene scene = new Scene(root, Color.BLACK);
+        Scene scene = new Scene(root);
         
         stage.setTitle("ECOUTE - Music Modelling Software");
         
         stage.setScene(scene);
         stage.sizeToScene();
         
-        stage.show();
         
+        stage.show();
         stage.setOnCloseRequest((event) -> {System.exit(0);});
         
         

@@ -28,9 +28,13 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.geometry.HPos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class GridBuilder extends GridPane 
@@ -47,6 +51,8 @@ public class GridBuilder extends GridPane
                       + "-fx-text-fill:#403020;"
                       + "-fx-font-weight:bold;"
                       + "-fx-font-size:14px;";
+    Label pointer;
+    
     /**
      * @return VBox containing the whole grid and buttons for adding extra
      *         columns and rows.
@@ -56,6 +62,7 @@ public class GridBuilder extends GridPane
         this.setPadding(new Insets(15));
         this.fillTheVoid();
         this.setBackground(Background.EMPTY);
+        this.setHalignment(pointer, HPos.CENTER);
         
         AnchorPane gridAnchor = new AnchorPane(this); //Only present for the possibility of adding a pointer
         gridAnchor.setBackground(Background.EMPTY);
@@ -66,11 +73,6 @@ public class GridBuilder extends GridPane
         gridScrollable.setStyle("-fx-background:transparent;"
                               + "-fx-background-color:rgba(255, 248, 220, 0.9);"
         );
-//        gridScrollable.setBackground(new Background(new BackgroundFill(Color.MAROON, CornerRadii.EMPTY, Insets.EMPTY)));
-        gridScrollable.setFitToHeight(true);
-        gridScrollable.setFitToWidth(true);
-        gridScrollable.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        gridScrollable.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         
         
         Button addBeatBtn = new Button("Add Beat");
@@ -149,8 +151,6 @@ public class GridBuilder extends GridPane
         BorderPane gridButtons = new BorderPane(null, null, editGridBtns, null, saveLoad);
         
         //Add all previous nodes into a final VBox for a convenient vertical layout
-//        FlowPane gridFlow = new FlowPane(gridScrollable);
-//        gridFlow.setAlignment(Pos.CENTER);
         VBox resultingNode = new VBox();
         
         resultingNode.getChildren().add(gridButtons);
@@ -193,6 +193,10 @@ public class GridBuilder extends GridPane
             for(int r = 1; r <= ecoute.Ecoute.rowNumber; r++)
                 this.add(new MusicButton(ecoute.Ecoute.buttonSize, buttonDefault, buttonActive, c, r), c, r);
         this.updateLabels();
+        pointer = new Label("V");
+        pointer.setStyle(buttonStyle);
+        pointer.setAlignment(Pos.CENTER);
+        point(1);
     }
     
     public void updateLabels()
@@ -243,9 +247,23 @@ public class GridBuilder extends GridPane
                             timeMap.get(((MusicButton)node).colIndex)
                     )
                 ((MusicButton)node).trigger();
-        });
-        
+        });  
     }
-
+    
+    public void point(int c)
+    {
+        try
+        {
+            this.add(new Pane(), c-1, 0);
+            this.add(pointer, c, 0);
+        }
+        catch(Exception e)
+        {
+            Platform.runLater(() -> {
+                this.add(new Pane(), c-1, 0);
+                this.add(pointer, c, 0);
+            });
+        }
+    }
     
 }

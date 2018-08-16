@@ -6,10 +6,12 @@ import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 
 import javax.sound.midi.*;
+import javax.swing.event.HyperlinkEvent;
 
 
 public class Synth {
@@ -53,9 +55,12 @@ public class Synth {
             mc[5].programChange(instr[instrument].getPatch().getProgram());
 
 
+            
             scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
                 @Override
                 public void handle(KeyEvent event) {
+                    
+                        
                     switch (event.getCode()) {
                         //Note C
                         case A:{

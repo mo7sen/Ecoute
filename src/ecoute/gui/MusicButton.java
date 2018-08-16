@@ -46,14 +46,26 @@ public class MusicButton extends Rectangle
         //          in your array. Have Fun!!
         this.setOnMouseClicked((event) -> {
             this.trigger();
-            soundPlayer.sampleList.get(rowIndex).timeMap.set(colIndex, this.active);
         });
         //EndOf: Handling The Clicking Event
         
+        this.setOnMouseEntered((event) -> {
+            if(event.isAltDown())
+                this.trigger(true);
+        });
+        
+        this.setOnMouseEntered((event) -> {
+            if(event.isControlDown())
+                this.trigger(false);
+        });
+        
+        
     }
     
-    public void trigger()
+    public void trigger(boolean... state)
     {
+        if(state.length < 1 || active != state[0])
+        {
             if(!active)
             {
                 this.setFill(activeColor);
@@ -65,6 +77,8 @@ public class MusicButton extends Rectangle
                 this.setStroke(defaultBorderColor);
             }
             active = !active;
+            soundPlayer.sampleList.get(rowIndex).timeMap.set(colIndex, this.active);
+        }
     }
 
 

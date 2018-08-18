@@ -17,6 +17,7 @@ import javax.swing.event.HyperlinkEvent;
 public class Synth {
     int instrument = 1;
     int velocity = 600;
+    boolean C,Db,D,E,Eb,F,G,Gb,A,Ab,B,Bb =false;
 //    ArrayList<KeyCode> keyCodes= new ArrayList();
 
     public Synth(Scene scene){
@@ -28,41 +29,9 @@ public class Synth {
             final MidiChannel[] mc = syn.getChannels();
             syn.loadAllInstruments(syn.getDefaultSoundbank());
             Instrument[] instr = syn.getAvailableInstruments();
-            
-            
-            
 
-            ControlBar.synthSounds.getItems().add("Piano"); //InEdited: Add whatever you need
-            ControlBar.synthSounds.getItems().add("Viola"); //InEdited: Add whatever you need
-            ControlBar.synthSounds.getItems().add("Bass"); //InEdited: Add whatever you need
-            ControlBar.synthSounds.getItems().add("Guitar"); //InEdited: Add whatever you need
 
-            ControlBar.synthSounds.getSelectionModel().selectedIndexProperty().addListener(new InvalidationListener() {
-                @Override
-                public void invalidated(Observable observable) {
-
-                    System.out.println(ControlBar.synthSounds.getSelectionModel().getSelectedIndex());//} ->  Pick one of these two
-                    //ControlBar.synthSounds.getSelectionModel().getSelectedItem(); //} ->
-                    
-                    //InEdited:
-                    //  Add the logic
-                    if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==0){
-                        instrument = 1;
-                    }
-                    if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==1){
-                        instrument = 30;
-                    }
-                    if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==2){
-                        instrument = 40;
-                    }
-                    if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==3){
-                        instrument = 33;
-                    }
-                    mc[5].programChange(instr[instrument].getPatch().getProgram());
-                }
-            });
-
-            ControlBar.synthSounds.getSelectionModel().selectFirst();
+            controlBar(mc[5], instr[instrument]);
 
 
 
@@ -70,6 +39,10 @@ public class Synth {
             mc[5].programChange(instr[instrument].getPatch().getProgram());
 
 
+           /* for (Instrument hopa:instr
+                 ) {
+                System.out.println(hopa);
+            }*/
             
             scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
                 @Override
@@ -79,14 +52,13 @@ public class Synth {
                     switch (event.getCode()) {
                         //Note C
                         case A:{
-                            mc[5].noteOn(60, velocity);
+                            if(!C) {
+                                mc[5].noteOn(60, velocity);
+                                C=true;
+                            }
                             
                         }
                             break;
-                        case K:{
-                            mc[5].noteOn(60, velocity);
-                        }
-                        break;
                         //Note C#
                         case W:{
                             mc[5].noteOn(61, velocity);
@@ -156,6 +128,7 @@ public class Synth {
                         //Note C
                         case A:{
                             mc[5].noteOff(60, velocity);
+                            c=false;
 
                         }
                         break;
@@ -231,6 +204,48 @@ public class Synth {
         catch (MidiUnavailableException e) {
             e.printStackTrace();
         }
+    }
+
+    private void controlBar(MidiChannel midiChannel, Instrument instrument) {
+        ControlBar.synthSounds.getItems().add("Piano"); //InEdited: Add whatever you need
+        ControlBar.synthSounds.getItems().add("Violin"); //InEdited: Add whatever you need
+        ControlBar.synthSounds.getItems().add("Bass"); //InEdited: Add whatever you need
+        ControlBar.synthSounds.getItems().add("Guitar"); //InEdited: Add whatever you need
+
+        ControlBar.synthSounds.getSelectionModel().selectedIndexProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+
+                System.out.println(ControlBar.synthSounds.getSelectionModel().getSelectedIndex());//} ->  Pick one of these two
+                //ControlBar.synthSounds.getSelectionModel().getSelectedItem(); //} ->
+
+                //InEdited:
+                //  Add the logic
+                if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==0){
+                    setInstrument(1);
+                }
+                if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==1){
+                    setInstrument(40);
+                }
+                if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==2){
+                    setInstrument(33);
+                }
+                if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==3){
+                    setInstrument(27);
+                }
+                midiChannel.programChange(instrument.getPatch().getProgram());
+            }
+        });
+
+        ControlBar.synthSounds.getSelectionModel().selectFirst();
+    }
+
+    public int getInstrument() {
+        return instrument;
+    }
+
+    public void setInstrument(int instrument) {
+        this.instrument = instrument;
     }
 
     private static class ChangeListenerImpl implements ChangeListener<String> {

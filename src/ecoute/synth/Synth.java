@@ -15,7 +15,7 @@ import javax.swing.event.HyperlinkEvent;
 
 
 public class Synth {
-    int instrument = 40;
+    int instrument = 1;
     int velocity = 600;
 //    ArrayList<KeyCode> keyCodes= new ArrayList();
 
@@ -31,24 +31,39 @@ public class Synth {
             
             
             
-/*         
-            ControlBar.synthSounds.getItems().add(""); //InEdited: Add whatever you need
-            
+
+            ControlBar.synthSounds.getItems().add("Piano"); //InEdited: Add whatever you need
+            ControlBar.synthSounds.getItems().add("Viola"); //InEdited: Add whatever you need
+            ControlBar.synthSounds.getItems().add("Bass"); //InEdited: Add whatever you need
+            ControlBar.synthSounds.getItems().add("Guitar"); //InEdited: Add whatever you need
+
             ControlBar.synthSounds.getSelectionModel().selectedIndexProperty().addListener(new InvalidationListener() {
                 @Override
                 public void invalidated(Observable observable) {
-            
-                    ControlBar.synthSounds.getSelectionModel().getSelectedIndex();//} ->  Pick one of these two
-                    ControlBar.synthSounds.getSelectionModel().getSelectedItem(); //} ->
+
+                    System.out.println(ControlBar.synthSounds.getSelectionModel().getSelectedIndex());//} ->  Pick one of these two
+                    //ControlBar.synthSounds.getSelectionModel().getSelectedItem(); //} ->
                     
                     //InEdited:
                     //  Add the logic
+                    if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==0){
+                        instrument = 1;
+                    }
+                    if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==1){
+                        instrument = 30;
+                    }
+                    if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==2){
+                        instrument = 40;
+                    }
+                    if(ControlBar.synthSounds.getSelectionModel().getSelectedIndex()==3){
+                        instrument = 33;
+                    }
+                    mc[5].programChange(instr[instrument].getPatch().getProgram());
                 }
             });
 
-//            ControlBar.synthSounds.getSelectionModel().select();    Select Index of default item
-            ControlBar.synthSounds.getSelectionModel().selectFirst(); or select first
-*/
+            ControlBar.synthSounds.getSelectionModel().selectFirst();
+
 
 
             syn.loadInstrument(instr[instrument]);

@@ -50,14 +50,18 @@ public class MusicButton extends Rectangle
         //EndOf: Handling The Clicking Event
         
         this.setOnMouseEntered((event) -> {
-            if(event.isAltDown())
+            if(event.isShiftDown())
                 this.trigger(true);
-        });
-        
-        this.setOnMouseEntered((event) -> {
             if(event.isControlDown())
                 this.trigger(false);
         });
+        this.setOnMouseExited((event) -> {
+            if(event.isShiftDown())
+                this.trigger(true);
+            if(event.isControlDown())
+                this.trigger(false);
+        });
+        
         
         
     }

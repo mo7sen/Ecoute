@@ -20,7 +20,8 @@ public class ControlBar
                         maxBPM = 240,
                         sliderRadius = 40;   //      Change BPM values to more convenient ones
     static Button       playBtn = new Button("\u23F5"),
-                        stopBtn = new Button("\u23F9");
+                        stopBtn = new Button("\u23F9"),
+                        pauseBtn = new Button("\u23F8");
     static Label        bpmLabel = new Label(),
                         volLabel = new Label();
     
@@ -39,13 +40,13 @@ public class ControlBar
         
         synthSounds = new ComboBox();
         synthSounds.setBackground(Background.EMPTY);
-        synthSounds.setStyle("-fx-text-fill:brown;");
+        
+        synthSounds.setStyle("-fx-font-size:20px;-fx-text-fill:#403020;-fx-font-weight:bold;");
         
         HBox radSliders = new HBox(bpmSlider, volSlider);
         bpmSlider.setLayoutX(-3 * sliderRadius);
-        FlowPane controlPane = new FlowPane(playBtn, stopBtn);
+        FlowPane controlPane = new FlowPane(playBtn, pauseBtn, stopBtn);
         BorderPane pane = new BorderPane(synthSounds, null, radSliders, null, controlPane);
-//        pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         radSliders.setSpacing(50);
         pane.setPadding(new Insets(15));
         
@@ -57,6 +58,7 @@ public class ControlBar
         playBtn.setOnAction((event) -> 
         {
             playBtn.setDisable(true);
+            pauseBtn.setDisable(false);
             stopBtn.setDisable(false);
             
             //InEdited: Play button pressed
@@ -67,6 +69,18 @@ public class ControlBar
         });
         //EndOf: Set up functionality of the Play button
         
+        pauseBtn.setDisable(true);
+        pauseBtn.setBackground(Background.EMPTY);
+        pauseBtn.setFont(Font.font(40));
+        pauseBtn.setTextFill(Color.BLUE);
+        pauseBtn.setOnAction((event) -> 
+        {
+            playBtn.setDisable(false);
+            pauseBtn.setDisable(true);
+            
+            soundPlayer.pause();
+        });
+        
         //Set up functionality of the Stop button
         stopBtn.setDisable(true);
         stopBtn.setBackground(Background.EMPTY);
@@ -76,6 +90,7 @@ public class ControlBar
         {
             playBtn.setDisable(false);
             stopBtn.setDisable(true);
+            pauseBtn.setDisable(true);
             
             //InEdited: Stop button pressed
             soundPlayer.end();

@@ -2,6 +2,7 @@ package ecoute;
 
 import ecoute.gui.ControlBar;
 import ecoute.gui.GridBuilder;
+import ecoute.gui.TitleBar;
 import ecoute.synth.Synth;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -21,6 +22,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 
 
@@ -52,9 +54,9 @@ public class Ecoute extends Application
         gridArea.setBackground(Background.EMPTY);
         
         Image backgroundImage = new Image(getClass().getClassLoader().getResource("notesBackground.jpg").toURI().toURL().toString());
-        
+        BorderPane titleBar = TitleBar.build();
         VBox appArea = new VBox();
-        appArea.getChildren().addAll(controlArea, gridArea);
+        appArea.getChildren().addAll(titleBar, controlArea, gridArea);
         appArea.setBackground(new Background(new BackgroundImage(backgroundImage, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
         
         StackPane root = new StackPane(appArea);
@@ -65,8 +67,7 @@ public class Ecoute extends Application
         
         stage.setScene(scene);
         stage.sizeToScene();
-        
-        
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
         stage.setOnCloseRequest((event) -> {System.exit(0);});
         

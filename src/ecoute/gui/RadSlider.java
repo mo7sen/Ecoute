@@ -11,7 +11,6 @@ import javafx.beans.property.StringProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -23,27 +22,35 @@ import javafx.util.Duration;
 
 public class RadSlider extends Pane
 {
-    public final double RX;
-    public final double RY;
-    public final double StrokeWidth;
-    public static double centerY;
-    public static double centerX;
+    private double RX;
+    private double RY;
+    private double StrokeWidth;
+    private static double centerY;
+    private static double centerX;
 
-    public static final double MIN_ANGLE = 225;
-    public static final double MAX_ANGLE = -45;
-    public static final double ARC_LENGTH = -270;
+    private StrokeLineCap strokeLineCap = StrokeLineCap.ROUND;
+    
+    private double MIN_ANGLE = 225;
+    private double MAX_ANGLE = -45;
+    private double ARC_LENGTH = -270;
 
     private Arc arc, backgroundArc;
-    private final Label label;
+    private Label label;
+    private Color foregroundColor = Color.BLACK;
+    private Color backgroundColor = Color.DARKGRAY;
+    private double foregroundWidth = 10, 
+            backgroundWidth = 10;
+    private double startingAngle, endingAngle;
+    private boolean clockwise, animated = true;
     private double xMouse,yMouse;
-    private final int minValue, maxValue;
-    private final String unit;
+    private int minValue, maxValue;
+    private String unit;
     private StringProperty valueStringProperty; //To bind with the label
-    public IntegerProperty value = new SimpleIntegerProperty();;
+    private IntegerProperty value = new SimpleIntegerProperty();;
     private Timeline valueChangeAnim;
-    private final double labelWidth;
-    private final double labelHeight;
-    private final double padding = 0;
+    private double labelWidth;
+    private double labelHeight;
+    private double padding = 0;
     
     public RadSlider(int minValue, int maxValue, String unit, Color arcColor, double RX, double RY, double StrokeWidth)
     {
@@ -83,7 +90,8 @@ public class RadSlider extends Pane
         
         EventHandler adjustValue = (EventHandler<MouseEvent>) (MouseEvent event) -> 
         {
-            valueChangeAnim.playFromStart(); //Plays from start to prevent inconsistencies in animation when
+            if(animated)
+                valueChangeAnim.playFromStart(); //Plays from start to prevent inconsistencies in animation when
             //triggered before reaching the end of its previous call
             
             xMouse = event.getX() - centerX;
@@ -144,7 +152,6 @@ public class RadSlider extends Pane
         KeyFrame kf2 = new KeyFrame(Duration.millis(200), kv2, kv2_1);
         
         valueChangeAnim.getKeyFrames().addAll(kf,kf2);
-        //EndOf: Building the Timeline for animation of value changind
 
         this.getChildren().addAll(backgroundArc, arc, label);
         
@@ -163,4 +170,102 @@ public class RadSlider extends Pane
     {
         return value;
     }
+    
+    public void setBackgroundColor(Color backgroundColor)
+    {
+        this.backgroundColor = backgroundColor;
+        backgroundArc.setStroke(backgroundColor);
+    }
+    
+    public Color getBackgroundColor()
+    {
+        return backgroundColor;
+    }
+    
+    public void setStrokeLineCap(StrokeLineCap strokeLineCap)
+    {
+        this.strokeLineCap = strokeLineCap;
+        arc.setStrokeLineCap(strokeLineCap);
+        backgroundArc.setStrokeLineCap(strokeLineCap);
+    }
+    
+    public StrokeLineCap getStrokeLineCap()
+    {
+        return strokeLineCap;
+    }
+    
+    public void setForegroundColor(Color foregroundColor)
+    {
+        this.foregroundColor = foregroundColor;
+        arc.setStroke(foregroundColor);
+    }
+    
+    public Color getForegroundColor()
+    {
+        return foregroundColor;
+    }
+    
+    public void setForegroundWidth(double foregroundWidth)
+    {
+        this.foregroundWidth = foregroundWidth;
+        arc.setStrokeWidth(foregroundWidth);
+    }
+    
+    public double getForegroundWidth()
+    {
+        return this.foregroundWidth;
+    }
+    
+    public void setBackgroundWidth(double backgroundWidth)
+    {
+        this.backgroundWidth = backgroundWidth;
+        backgroundArc.setStrokeWidth(backgroundWidth);
+    }
+    
+    public double getBackgroundWidth()
+    {
+        return backgroundWidth;
+    }
+    
+    public void setStartingAngle(double startingAngle)
+    {
+        this.startingAngle = startingAngle;
+    }
+    
+    public void setEndingAngle(double endingAngle)
+    {
+        this.endingAngle = endingAngle;
+    }
+    
+    public double getStartingAngle()
+    {
+        return startingAngle;
+    }
+    
+    public double getEndingAngle()
+    {
+        return endingAngle;
+    }
+    
+    public void setClockwise(boolean clockwise)
+    {
+        this.clockwise = clockwise;
+    }
+    
+    public boolean getClockwise()
+    {
+        return clockwise;
+    }
+    
+    public void setAnimated(boolean animated)
+    {
+        this.animated = animated;
+    }
+    
+    public boolean getAnimated()
+    {
+        return animated;
+    }
+    
+    
 }
